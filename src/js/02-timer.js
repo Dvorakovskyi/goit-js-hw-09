@@ -3,34 +3,39 @@ import 'flatpickr/dist/flatpickr.min.css';
 
 const inputEl = document.querySelector('#datetime-picker');
 const btnEl = document.querySelector('[data-start]');
-btnEl.disabled = true;
-let timeDiff = 0;
 
+const data = {
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
+};
+
+btnEl.disabled = true;
+
+let timeDiff = 0;
+let timerId = null;
+let selectedDate = null;
+
+// flatpickr library
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    if (selectedDates[0] < new Date()) {
-      window.alert('Please choose a date in the future');
-    } else {
-        btnEl.disabled = false;
+    selectedDate = selectedDates[0];
 
-      setInterval(() => {
-        timeDiff = selectedDates[0] - new Date();
-      }, 1000);
+    if (selectedDate < new Date()) {
+      window.alert('Please choose a date in the future');
+      return;
+    } else {
+      btnEl.disabled = false;
     }
   },
 };
 
 flatpickr(inputEl, options);
-
-const handleBtnClick = () => {
-    console.log(convertMs(timeDiff));
-}
-
-btnEl.addEventListener('click', handleBtnClick);
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -50,3 +55,26 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
+
+const addLeadingZero = value => {
+  return String(value).padStart(2, '0');
+};
+
+const handleBtnClick = () => {
+  timerId = setInterval(() => {
+    timeDiff = selectedDate - new Date();
+
+    const convertedTime = convertMs(timeDiff);
+
+    data.days.textContent = addLeadingZero(convertedTime.days);
+    data.hours.textContent = addLeadingZero(convertedTime.hours);
+    data.minutes.textContent = addLeadingZero(convertedTime.minutes);
+    data.seconds.textContent = addLeadingZero(convertedTime.seconds);
+
+    if (timeDiff <= 1000) {
+      clearInterval(timerId);
+    }
+  }, 1000);
+};
+
+btnEl.addEventListener('click', handleBtnClick);
