@@ -16,3 +16,32 @@ img {
   display: block;
   max-width: 100%;
 }
+
+button {
+  cursor: pointer;
+}
+
+.timer {
+  display: flex;
+
+  width: 70px;
+}
+
+.field {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.field:not(:last-child) {
+  margin-right: 8px;
+}
+
+.value {
+  font-size: 24px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+}
